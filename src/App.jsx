@@ -2,10 +2,12 @@ import 'regenerator-runtime/runtime';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import botGif from './assets/bot-gif.gif';
+import botPic from './assets/bot-pic.png';
 
 function App() {
   const [joke, setJoke] = useState({ setup: null, punchline: null });
   const [loading, setLoading] = useState(false);
+  const [isSpeak, setIsSpeak] = useState(false);
   const synth = window.speechSynthesis;
   const voice = synth.getVoices();
   const getJoke = async () => {
@@ -26,19 +28,25 @@ function App() {
     utterThis.volume = 0.75;
     utterThis.lang = 'en-US';
     synth.speak(utterThis);
+    utterThis.onstart = () => { setIsSpeak(true); }
+    utterThis.onend = () => { setIsSpeak(false); }
     setLoading(false);
   };
   return (
     <>
       <div className='vh-100 d-flex justify-content-center align-items-center'>
         <div className="text-center">
-            <p>{joke.setup}</p>
+          <p>{joke.setup}</p>
           <div className='mb-4'>
-            <img
+            {isSpeak === true ? <img
               className="img-fluid mb-2"
-              src={ botGif }
+              src={botGif}
               alt="joke robot"
-            />
+            /> : <img
+              className="img-fluid mb-2"
+              src={botPic}
+              alt="joke robot"
+            />}
             <p>{joke.punchline}</p>
           </div>
           <button
